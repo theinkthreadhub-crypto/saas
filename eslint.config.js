@@ -5,4 +5,8 @@ export default tseslint.config(
   { ignores: ["**/dist/**", "**/node_modules/**", "**/*.md"] },
   js.configs.recommended,
   ...tseslint.configs.strict,
+  {
+    files: ["**/*.test.ts"],
+    rules: { "@typescript-eslint/no-non-null-assertion": "off" },
+  },
 );

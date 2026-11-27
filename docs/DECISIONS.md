@@ -219,3 +219,11 @@ Main: **EXE (NSIS, Tauri)** for shops — small, simple, no admin needed, works 
 Also build **MSI (WiX, Tauri)** for big clients whose IT installs on many PCs. Both from the same CI build.
 Not MSIX: Tauri does not build it, needs a mandatory signing certificate, and its sandbox can block printers/USB/local DB.
 Buy a code-signing certificate before pilot so Windows does not show "Unknown publisher" warning.
+
+## #30 — Neon connected; database driver (2026-11-27)
+Neon project "Saas" (odd-band-54727812), region aws-ap-southeast-1 (Singapore), Postgres 18, branch "production".
+Env vars (never commit): DATABASE_URL (pooled, app traffic), DATABASE_URL_UNPOOLED (direct, migrations), DB_DRIVER.
+Driver: Drizzle ORM + node-postgres (`DB_DRIVER=pg`, default) — same code on Node/Docker VPS and Cloudflare (Hyperdrive),
+so leaving Neon = change DATABASE_URL only. Fallback `DB_DRIVER=neon-ws` (Neon serverless driver over WebSocket port 443,
+full transactions) where TCP 5432 is blocked. Migrations: drizzle-kit generate → `pnpm db:migrate` (our script, both drivers).
+Neon extras (Auth, Functions, AI gateway, Realtime, object storage) stay OFF.
