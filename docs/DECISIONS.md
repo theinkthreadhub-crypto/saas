@@ -219,3 +219,23 @@ Main: **EXE (NSIS, Tauri)** for shops — small, simple, no admin needed, works 
 Also build **MSI (WiX, Tauri)** for big clients whose IT installs on many PCs. Both from the same CI build.
 Not MSIX: Tauri does not build it, needs a mandatory signing certificate, and its sandbox can block printers/USB/local DB.
 Buy a code-signing certificate before pilot so Windows does not show "Unknown publisher" warning.
+
+## #30 — One schema for SQLite + Postgres via a dialect file (2026-11-27, claude)
+Decision: `packages/db/src/{sqlite,pg}/` each have one `dialect.ts` (the only file that differs) and the same table files
+(`tenancy, org, masters, vouchers, system, schema`), byte-identical. A test fails if they drift, and another test
+compares every table's columns, indexes and checks across both dialects.
+Storage: money = integer paise (SQLite) / NUMERIC(14,2) (Postgres) but code always sees integer paise; quantity = integer
+milli-units in both (1.5 kg = 1500); GST rate = basis points (18% = 1800); time = epoch ms in code (INTEGER / TIMESTAMPTZ);
+dates = "YYYY-MM-DD"; enums = text + CHECK (not native Postgres enums, so adding a value needs no risky migration).
+Exception to golden rule 5: `tenants` has no tenant_id/company_id, `companies` has no company_id, and `users` and `roles`
+are account-level (tenant_id only) so one login can work across many companies (DECISIONS #19). Company access per user
+is added in the User Master task.
+Why: Drizzle has no single cross-dialect table builder; two hand-written schemas would drift.
+Rejected: two independent schema files (drift), native enums (migration pain), NUMERIC for quantity (floats creep in via JS).
+
+## #31 — Test databases: node:sqlite + PGlite (2026-11-27, claude)
+Decision: unit tests run migrations on Node's built-in `node:sqlite` and on `@electric-sql/pglite` (real Postgres in WASM,
+in memory). Dev-dependency only, never shipped.
+Why: tests real SQL and constraints for both databases with no Docker and no native build step, on Windows and CI alike.
+Rejected: better-sqlite3 in tests (native build), Docker Postgres for unit tests (slow, not on every dev PC).
+

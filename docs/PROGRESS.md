@@ -12,7 +12,7 @@ Agents: `claude` · `antigravity` · `codex`. Claim ONE task at a time. Update t
 - [ ] Error log system per DECISIONS #23 (codes, simple English fix steps, Sentry)
 - [x] Monorepo setup: pnpm + Turborepo, TypeScript strict, ESLint, Prettier (claude, 2026-11-27)
 - [x] GitHub Actions CI: lint, typecheck, unit tests on every PR (claude, 2026-11-27)
-- [~] (claude, 2026-11-27) `packages/db`: Drizzle schema for core tables (see ARCHITECTURE.md §3), SQLite + Postgres migrations
+- [x] `packages/db`: Drizzle schema for core tables (see ARCHITECTURE.md §3), SQLite + Postgres migrations (claude, 2026-11-27)
 - [x] UUID v7 helper, money helper (paise ↔ rupees, rounding), date/fin-year helper + tests (claude, 2026-11-27)
 - [ ] `packages/core`: voucher engine (one transaction: voucher + items + stock_moves + ledger_entries + bill_no + outbox)
 - [ ] Unit tests for voucher engine: sale, return, cancel, partial payment, discount, round-off
@@ -90,6 +90,7 @@ Agents: `claude` · `antigravity` · `codex`. Claim ONE task at a time. Update t
 
 ## Questions for owner
 - (agents add questions here; owner answers inline)
+- (claude) Login ID is unique across ALL clients (one mobile number = one login everywhere). OK, or should the same mobile be allowed as a login in two different client accounts?
 
 ---
 
@@ -102,6 +103,23 @@ Files: ...
 Left / next step: ...
 Warnings: ...
 ```
+
+### 2026-11-27 — claude — P0-3 `packages/db` schema + migrations
+- Done: Drizzle schema for 19 core tables (tenants, companies, outlets, devices, roles, users, units, items, godowns,
+  ledgers, parties, bill_series, vouchers, voucher_items, stock_moves, ledger_entries, outbox, audit_log, activity_log).
+  Same table files for SQLite and Postgres; only `dialect.ts` differs (DECISIONS #30). First migration `0000_core_tables`
+  for both. DB-level guards: unique bill no `(company_id, fin_year, series, bill_no)`, unique device series per company,
+  cancelled voucher needs reason + time, ledger line is debit XOR credit and > 0, stock move qty ≠ 0, enum CHECKs, FKs.
+- Tests (69): migrations run on node:sqlite and PGlite (DECISIONS #31); same constraint suite on both; paise ↔ NUMERIC
+  round trip through Drizzle; schema parity; golden rule 5 columns; no float columns.
+- Files: `packages/db/**`, root `package.json` (db:generate), `.prettierignore`, `eslint.config.js`, AGENTS.md §8, DECISIONS #30–31.
+- How to test: `pnpm install && pnpm lint && pnpm typecheck && pnpm test`. After any schema edit: `pnpm db:generate`.
+- Left / next: P0-4 voucher engine (uses `bill_series.next_no` inside the voucher transaction). `pnpm db:migrate` runner
+  is not built yet (`src/migration-files.ts` already reads the SQL in order). Postgres RLS policies are P3-1.
+  audit_log is append-only by rule but not yet blocked by a DB trigger. Not in this task: licences, item_batches,
+  stock_balance, daily_summary, settings, company_packs, user→company access (later tasks).
+- Warnings: edit a table file in `src/sqlite/` AND copy it to `src/pg/` (test enforces). On Postgres, raw SQL money
+  literals are rupees; always go through Drizzle so code sees paise. `node:sqlite` needs Node ≥ 22.13.
 
 ### 2026-11-27 — claude — Phase 0 start: monorepo + core helpers
 - Done: pnpm workspaces + Turborepo, TS strict base config (`packages/config`), ESLint (typescript-eslint strict) + Prettier,

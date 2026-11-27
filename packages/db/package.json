@@ -1,0 +1,23 @@
+{
+  "name": "@setupro/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "db:generate": "drizzle-kit generate --config drizzle.sqlite.config.ts && drizzle-kit generate --config drizzle.pg.config.ts"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.6.0",
+    "@setupro/config": "workspace:*",
+    "@types/node": "^22.10.0",
+    "drizzle-kit": "^0.31.11"
+  },
+  "dependencies": {
+    "@setupro/core": "workspace:*",
+    "drizzle-orm": "^0.45.4"
+  }
+}

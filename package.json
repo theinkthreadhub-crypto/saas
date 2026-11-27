@@ -9,6 +9,7 @@
     "build": "turbo run build",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
+    "db:generate": "pnpm --filter @setupro/db db:generate",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write ."
   },

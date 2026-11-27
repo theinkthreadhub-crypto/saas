@@ -97,7 +97,8 @@ pnpm dev              # run all apps locally
 pnpm test             # unit tests (must pass before PR)
 pnpm test:e2e         # Playwright
 pnpm lint && pnpm typecheck
-pnpm db:migrate       # apply migrations (local + cloud via env)
+pnpm db:migrate       # apply migrations (local + cloud via env) — not built yet
+pnpm db:generate      # after editing packages/db schema: writes SQLite + Postgres migrations
 ```
 (If a command does not exist yet, create it and record it here.)
 
