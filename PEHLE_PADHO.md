@@ -9,6 +9,7 @@ samjhenge ki kya banana hai, kitna ho gaya, aur aage kya karna hai.
 | `AGENTS.md` | Teeno AI ke liye niyam (sabse zaroori). Antigravity aur Codex ise khud padhte hain |
 | `CLAUDE.md` | Claude ke liye: bas AGENTS.md ko jod deta hai |
 | `docs/MASTER_PLAN.md` | Owner ka poora plan: kya, kaise, kab — taaki kuch na chhoote |
+| `docs/CLAUDE_CODE_PROMPTS.md` | Sirf Claude Code ke liye 32 prompt, kram se — ek-ek karke do |
 | `docs/PHASE_PROMPTS.md` | Har phase ke copy-paste prompt — kis AI ko kya dena hai |
 | `docs/VISION.md` | Hum kya bana rahe hain aur kyun |
 | `docs/ARCHITECTURE.md` | Software ka poora naksha |

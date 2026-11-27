@@ -97,7 +97,9 @@ pnpm dev              # run all apps locally
 pnpm test             # unit tests (must pass before PR)
 pnpm test:e2e         # Playwright
 pnpm lint && pnpm typecheck
-pnpm db:migrate       # apply migrations (local + cloud via env)
+pnpm db:migrate       # apply migrations to the DB in .env.local (direct URL)
+pnpm test:live        # live tests against Neon (writes are rolled back)
+pnpm --filter @setupro/db db:generate   # make a new migration after changing the schema
 ```
 (If a command does not exist yet, create it and record it here.)
 

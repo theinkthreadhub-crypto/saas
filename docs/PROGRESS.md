@@ -12,7 +12,7 @@ Agents: `claude` · `antigravity` · `codex`. Claim ONE task at a time. Update t
 - [ ] Error log system per DECISIONS #23 (codes, simple English fix steps, Sentry)
 - [x] Monorepo setup: pnpm + Turborepo, TypeScript strict, ESLint, Prettier (claude, 2026-11-27)
 - [x] GitHub Actions CI: lint, typecheck, unit tests on every PR (claude, 2026-11-27)
-- [ ] `packages/db`: Drizzle schema for core tables (see ARCHITECTURE.md §3), SQLite + Postgres migrations
+- [~] (claude, 2026-11-27) `packages/db`: Drizzle schema for core tables — DONE so far: Neon wired, tenants/companies/outlets + migration 0000 applied, live tests; NEXT: users, roles, items, parties, ledgers, vouchers, stock_moves, ledger_entries, bill_series, outbox, audit/activity logs + SQLite twin. (see ARCHITECTURE.md §3), SQLite + Postgres migrations
 - [x] UUID v7 helper, money helper (paise ↔ rupees, rounding), date/fin-year helper + tests (claude, 2026-11-27)
 - [ ] `packages/core`: voucher engine (one transaction: voucher + items + stock_moves + ledger_entries + bill_no + outbox)
 - [ ] Unit tests for voucher engine: sale, return, cancel, partial payment, discount, round-off
@@ -102,6 +102,16 @@ Files: ...
 Left / next step: ...
 Warnings: ...
 ```
+
+### 2026-11-27 — claude — Neon Postgres wired (P0-3 started)
+- Done: `neon init` + `neon deploy` (project odd-band-54727812, branch production, Postgres only); env vars pulled to
+  `.env.local` (git-ignored). `packages/db`: Drizzle schema tenants → companies → outlets (UUID v7 ids, timestamps,
+  unique bill series per company), migration `0000_thick_doorman.sql` applied to Neon, client with driver switch
+  (DECISIONS #30), migrate script, live tests.
+- Proof: build/typecheck/lint pass; `pnpm test:live` 3/3 pass (connect, transaction write+read+rollback leaves 0 rows,
+  duplicate series rejected). Tables in Neon: companies, outlets, tenants.
+- How to test: put DATABASE_URL + DATABASE_URL_UNPOOLED in `.env.local`, then `pnpm db:migrate && pnpm test:live`.
+- Note: the Neon API key was shared in chat — owner should revoke it in Neon and create a new one.
 
 ### 2026-11-27 — claude — Phase 0 start: monorepo + core helpers
 - Done: pnpm workspaces + Turborepo, TS strict base config (`packages/config`), ESLint (typescript-eslint strict) + Prettier,
